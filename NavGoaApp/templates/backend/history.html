@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script>
+    const getCSRFToken = () => {
+        const result = document.cookie.split('; ').find(row=>row.startsWith('csrftoken=')).split('=')[1];
+        return result;
+    }
+</script>
+<style>
+
+    .buttonContainer{
+        display:flex;
+        position: relative;
+        justify-content: center;
+        align-items:center;
+        padding:3rem;
+        padding-top:6rem;
+        flex-direction: column;
+    }
+  
+    .btn-dark{
+        position:-webkit-sticky;
+        position:sticky;
+        z-index: 1;
+        top:0;
+        margin-bottom:5rem;
+    }
+    .list-group{
+        z-index:-1;
+    }
+    .blue{
+        color:red;
+    }
+</style>
+</head>
+<body>
+  
+        
+        
+        
+        <div class = "buttonContainer">
+        <h1>History</h1>
+    <button type="button" onClick="history.back()"class="btn btn-dark">&#8592; Back</button>
+    <div class="list-group">
+        
+    </div>
+    </div>
+
+
+<script>
+    const csrf_token = getCSRFToken();
+    const url = 'http://127.0.0.1:8000/api/';
+    fetch(url,{
+        method:'GET'
+        
+    }).then(response=>response.json())
+    .then(data => {
+        const arr = data;
+        
+        console.log(typeof (arr))
+        const totalData = arr.length;
+        const historyElement = document.querySelector('.list-group');
+        console.log(arr);
+
+        for(let i = 0;i<totalData;i++){
+            const history = historyElement.innerHTML;
+            if(i != (totalData)-1){
+            
+            historyElement.innerHTML = `
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">${arr[i].source}  ->  ${arr[i].destination} at ${arr[i].hour}:${arr[i].minute}</h5>
+      <small class="text-muted">${arr[i].created}</small>
+    </div>
+    <p class="mb-1">${arr[i].path.shortestPath}</p>
+    <small class="text-muted">Heuristic Cost : ${arr[i].heuristicCost}         Travel Time : ${arr[i].travelTime}</small>
+  </a>
+            ` + history;
+                
+            }
+            else{
+                historyElement.innerHTML =`
+                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+    <div class="d-flex w-100 justify-content-between">
+<h5 class="mb-1">${arr[i].source}  ->  ${arr[i].destination} at ${arr[i].hour}:${arr[i].minute}</h5>
+      <small class="text-muted">${arr[i].created}</small>
+    </div>
+    <p class="mb-1">${arr[i].path.shortestPath}</p>
+<small class="text-muted blue" >Heuristic Cost : ${arr[i].heuristicCost}         Travel Time : ${arr[i].travelTime}</small>
+  </a>
+                ` + history;
+            }
+            
+        }
+        
+    })
+</script>
+</body>
+</html>
